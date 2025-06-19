@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
+// ✅ Replace this with your live backend URL
+const API_BASE = "https://lone-town-backend.onrender.com";
+
 function MatchScreen() {
   const [match, setMatch] = useState(null);
   const [isFrozen, setIsFrozen] = useState(false);
@@ -14,7 +17,7 @@ function MatchScreen() {
   useEffect(() => {
     if (userId) {
       axios
-        .get(`http://localhost:5000/api/users/match/${userId}`)
+        .get(`${API_BASE}/api/users/match/${userId}`)
         .then((res) => setMatch(res.data.match))
         .catch((err) => {
           const errorMsg = err.response?.data?.error;
@@ -23,7 +26,7 @@ function MatchScreen() {
 
             // ⏳ Fetch freezeUntil time
             axios
-              .get(`http://localhost:5000/api/users/${userId}`)
+              .get(`${API_BASE}/api/users/${userId}`)
               .then((res) => {
                 const freezeUntil = new Date(res.data.freezeUntil);
                 if (!freezeUntil) return;
@@ -60,17 +63,14 @@ function MatchScreen() {
   const handleUnpin = async () => {
     try {
       // 1️⃣ Get current user's answers
-      const userRes = await fetch(`http://localhost:5000/api/users/${userId}`);
+      const userRes = await fetch(`${API_BASE}/api/users/${userId}`);
       const userData = await userRes.json();
       const userAnswers = userData.compatibilityAnswers;
 
       // 2️⃣ Unpin the match
-      const res = await fetch(
-        `http://localhost:5000/api/users/unpin/${userId}`,
-        {
-          method: "POST",
-        }
-      );
+      const res = await fetch(`${API_BASE}/api/users/unpin/${userId}`, {
+        method: "POST",
+      });
       const data = await res.json();
       alert(data.message);
 

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // backend URL
+// ✅ Use your Render backend URL
+const API_BASE = 'https://lone-town-backend.onrender.com';
+const socket = io(API_BASE); // ✅ connect to live socket server
 
 function Chat() {
   const location = useLocation();
@@ -15,14 +17,17 @@ function Chat() {
 
   useEffect(() => {
     if (matchId) {
+      // ✅ Join chat room
       socket.emit('joinRoom', matchId);
 
-      fetch(`http://localhost:5000/api/messages/${matchId}`)
+      // ✅ Fetch old messages
+      fetch(`${API_BASE}/api/messages/${matchId}`)
         .then(res => res.json())
         .then(data => setMessages(data))
         .catch(err => console.error('❌ Failed to load messages:', err));
 
-      fetch(`http://localhost:5000/api/messages/unlock/${matchId}`)
+      // ✅ Check video unlock eligibility
+      fetch(`${API_BASE}/api/messages/unlock/${matchId}`)
         .then(res => res.json())
         .then(data => {
           if (data.eligible) {
@@ -31,6 +36,7 @@ function Chat() {
         })
         .catch(err => console.error('❌ Failed to check video unlock:', err));
 
+      // ✅ Listen for incoming messages
       socket.on('receiveMessage', (msg) => {
         setMessages((prev) => [...prev, msg]);
       });
@@ -56,7 +62,12 @@ function Chat() {
     <div>
       <h2>💬 Chat Room</h2>
 
-      <div style={{ border: '1px solid #ccc', padding: '1rem', maxHeight: '300px', overflowY: 'scroll' }}>
+      <div style={{
+        border: '1px solid #ccc',
+        padding: '1rem',
+        maxHeight: '300px',
+        overflowY: 'scroll'
+      }}>
         {messages.map((msg, index) => (
           <div key={index}>
             <strong>{msg.sender}: </strong>{msg.text}

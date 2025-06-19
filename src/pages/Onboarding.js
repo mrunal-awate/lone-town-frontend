@@ -9,7 +9,7 @@ function Onboarding() {
 
   const handleFormSubmit = async (data) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/users/register', data);
+      const res = await axios.post('https://lone-town-backend.onrender.com/api/users/register', data);
       console.log('✅ User saved:', res.data);
       navigate('/match', { state: { userId: res.data._id } });
     } catch (err) {
